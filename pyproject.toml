@@ -23,11 +23,22 @@ packages = [{include = "stream_pymqi"}]
 license = "Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/SergeiVElfimov/stream-pymqi"
-requires-python = ">=3.11,<4.0"
-dependencies = [
-    "pymqi>=1.12.13",
-    "pyyaml>=6.0",
+classifiers = [
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
 ]
+
+[tool.poetry.dependencies]
+pymqi = ">=1.12.13"
+pyyaml = ">=6.0"
+python = ">=3.11,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.7.9"
@@ -38,12 +49,19 @@ mypy-extensions = "^1.0.0"
 pre-commit = "^3.7.1"
 pytest = "^8.2.2"
 pytest-cov = "^5.0.0"
-ruff = "^0.6.2"
+requests = "^2.32.3"
+tomli = "^2.0.1"
+types-pyyaml = "^6.0.0"
+types-pytz = "^2025.2.0.20250516"
+types-setuptools = "^70.1.0.20240627"
+typing-extensions = "^4.12.2"
+ruff = "^0.5.0"
+urllib3 = "<=2.2.2"
+python-dotenv = ">=1.0.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
+requires = ["poetry-core>=1.0.0"]
 
 [tool.ruff]
 line-length = 120
