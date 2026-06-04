@@ -41,9 +41,11 @@ export LD_LIBRARY_PATH=/opt/mqm/lib64:$LD_LIBRARY_PATH
 FROM python:3.11-slim
 
 # Install IBM MQ client
-RUN apt-get update && apt-get install -y \
-    libmqiclient-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN sudo mkdir -p /opt/mqm /var/mqm /IBM /.mqm && \
+    sudo chmod 777 -R /opt/mqm /var/mqm /IBM /.mqm && \
+    curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.4.3.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz && \
+    sudo tar -zxf mqclient.tar.gz -C /opt/mqm && \
+    sudo chmod 777 -R /opt/mqm
 
 ENV LD_LIBRARY_PATH=/opt/mqm/lib64:$LD_LIBRARY_PATH
 
