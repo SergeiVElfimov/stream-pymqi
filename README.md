@@ -1,5 +1,10 @@
 # stream-pymqi
 
+[![build-status-image]][build-status]
+[![codeql-image]][codeql]
+[![pypi-version]][pypi]
+[![pypi-downloads]][pypi]
+
 High-level IBM MQ consumer and producer library for Python
 
 ## Features
@@ -289,3 +294,11 @@ Message consumer for receiving messages from queues.
 ## License
 
 Apache-2.0
+
+[build-status-image]: https://github.com/SergeiVElfimov/stream-pymqi/actions/workflows/python-package.yml/badge.svg
+[build-status]: https://github.com/SergeiVElfimov/stream-pymqi/actions/workflows/python-package.yml
+[codeql-image]: https://github.com/SergeiVElfimov/stream-pymqi/actions/workflows/codeql.yml/badge.svg
+[codeql]: https://github.com/SergeiVElfimov/stream-pymqi/actions/workflows/codeql.yml
+[pypi-version]: https://img.shields.io/pypi/v/stream-pymqi.svg
+[pypi-downloads]: https://img.shields.io/pypi/dm/stream-pymqi?color=%232E73B2&logo=python&logoColor=%23F9D25F
+[pypi]: https://pypi.org/project/stream-pymqi/
