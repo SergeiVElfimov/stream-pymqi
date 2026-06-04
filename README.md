@@ -11,7 +11,7 @@ High-level IBM MQ consumer and producer library for Python
 
 - Simple consumer/producer API for IBM MQ
 - Automatic connection management and reconnection
-- Stream-style message processing (async/await ready)
+- Stream-style message processing (synchronous, thread-based)
 - Configuration via Python dict or YAML files
 - Thread-safe operations
 - Error handling and retry mechanisms
