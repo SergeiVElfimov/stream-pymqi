@@ -28,13 +28,9 @@ jobs:
       run: |
         sudo mkdir -p /opt/mqm /var/mqm /IBM /.mqm
         sudo chmod 777 -R /opt/mqm /var/mqm /IBM /.mqm
-        curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.3.0.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
-        sudo tar -xzf mqclient.tar.gz -C /opt/mqm --strip-components=1
+        curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.4.3.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
+        sudo tar -zxf mqclient.tar.gz -C /opt/mqm
         sudo chmod 777 -R /opt/mqm
-        sudo ldconfig
-    - name: Install pymqi wheel
-      run: |
-        pip install --no-build-isolation pymqi==1.12.11
     - name: Install dependencies
       run: poetry install
       env:
@@ -76,10 +72,9 @@ jobs:
         run: |
           sudo mkdir -p /opt/mqm /var/mqm /IBM /.mqm
           sudo chmod 777 -R /opt/mqm /var/mqm /IBM /.mqm
-          curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.3.0.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
-          sudo tar -xzf mqclient.tar.gz -C /opt/mqm --strip-components=1
+          curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.4.3.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
+          sudo tar -zxf mqclient.tar.gz -C /opt/mqm
           sudo chmod 777 -R /opt/mqm
-          sudo ldconfig
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install
