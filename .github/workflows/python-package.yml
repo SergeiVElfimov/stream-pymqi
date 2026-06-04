@@ -26,10 +26,13 @@ jobs:
       uses: abatilo/actions-poetry@v4
     - name: Install IBM MQ client
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libmqiclient-dev
+        sudo mkdir -p /opt/mqm
+        curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.3.0.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
+        sudo tar -zxf mqclient.tar.gz -C /opt/mqm
     - name: Install dependencies
       run: poetry install
+      env:
+        LD_LIBRARY_PATH: "/opt/mqm/lib64"
     - name: Run unit tests
       run: poetry run pytest
 
