@@ -26,13 +26,15 @@ jobs:
       uses: abatilo/actions-poetry@v4
     - name: Install IBM MQ client
       run: |
-        sudo mkdir -p /opt/mqm
+        sudo mkdir -p /opt/mqm /var/mqm /IBM /.mqm
+        sudo chmod 777 -R /opt/mqm /var/mqm /IBM /.mqm
         curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.3.0.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
         sudo tar -zxf mqclient.tar.gz -C /opt/mqm
+        sudo chmod 777 -R /opt/mqm
     - name: Install dependencies
       run: poetry install
       env:
-        LD_LIBRARY_PATH: "/opt/mqm/lib64"
+        LD_LIBRARY_PATH: "/opt/mqm/lib64:/usr/local/sap/nwrfcsdk/lib"
     - name: Run unit tests
       run: poetry run pytest
 
@@ -66,9 +68,18 @@ jobs:
         with:
           path: .venv
           key: venv-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}-0
+      - name: Install IBM MQ client
+        run: |
+          sudo mkdir -p /opt/mqm /var/mqm /IBM /.mqm
+          sudo chmod 777 -R /opt/mqm /var/mqm /IBM /.mqm
+          curl -L "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.3.0.0-IBM-MQC-Redist-LinuxX64.tar.gz" -o mqclient.tar.gz
+          sudo tar -zxf mqclient.tar.gz -C /opt/mqm
+          sudo chmod 777 -R /opt/mqm
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install
+        env:
+          LD_LIBRARY_PATH: "/opt/mqm/lib64:/usr/local/sap/nwrfcsdk/lib"
       - name: Run pre-commit
         run: |
           source .venv/bin/activate
