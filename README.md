@@ -18,7 +18,95 @@ High-level IBM MQ consumer and producer library for Python
 pip install stream-pymqi
 ```
 
+### Prerequisites
+
+This library requires IBM MQ client libraries to be installed on your system.
+
+**Ubuntu/Debian:**
+```bash
+# Download IBM MQ client from https://www.ibm.com/support/pages/ibm-mq-client-downloads
+# Extract and install
+# Note: IBM MQ client is not available in standard Ubuntu repositories
+# You need to download and install it manually from IBM website
+export LD_LIBRARY_PATH=/opt/mqm/lib64:$LD_LIBRARY_PATH
+```
+
+**Windows:**
+1. Download IBM MQ client from https://www.ibm.com/support/pages/ibm-mq-client-downloads
+2. Run the installer
+3. Add MQ client bin directory to PATH
+
+**Docker:**
+```dockerfile
+FROM python:3.11-slim
+
+# Install IBM MQ client
+RUN apt-get update && apt-get install -y \
+    libmqiclient-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LD_LIBRARY_PATH=/opt/mqm/lib64:$LD_LIBRARY_PATH
+
+# Install your application
+COPY . /app
+WORKDIR /app
+RUN pip install .
+```
+
 ## Usage
+
+### WorkerPool (Recommended for multiple queues)
+
+The `WorkerPool` allows you to process messages from multiple queues concurrently using separate threads.
+
+```python
+from stream_pymqi import WorkerPool, StreamConfig
+
+config = StreamConfig(
+    host='localhost',
+    port=1414,
+    channel='CHANNEL1',
+    queue_manager='QM1',
+    queue_name='QUEUE1'
+)
+
+pool = WorkerPool(config=config)
+
+@pool.worker(queue_name='QUEUE1')
+def handle_queue1(message):
+    print(f"[QUEUE1] Received: {message}")
+
+@pool.worker(queue_name='QUEUE2')
+def handle_queue2(message):
+    print(f"[QUEUE2] Received: {message}")
+
+pool.run()  # Start all workers
+```
+
+### Worker (Single queue)
+
+For processing messages from a single queue:
+
+```python
+from stream_pymqi import Worker, StreamConfig
+
+config = StreamConfig(
+    host='localhost',
+    port=1414,
+    channel='CHANNEL1',
+    queue_manager='QM1',
+    queue_name='QUEUE1'
+)
+
+worker = Worker(config=config, queue_name='QUEUE1')
+
+@worker.on_message()
+def handle_message(message):
+    print(f"Received: {message}")
+    return True
+
+worker.run()
+```
 
 ### Consumer
 
@@ -99,33 +187,44 @@ config = StreamConfig(
     queue_manager='QM1',
     queue_name='QUEUE1',
     ssl=True,
-    ssl_cipher_spec='TLS_RSA_WITH_AES_128_CBC_SHA'
+    ssl_cipher_spec='TLS_RSA_WITH_AES_128_CBC_SHA256'
 )
 
 consumer = Consumer(config)
 consumer.start()
 ```
 
-### Error Handling
+### Using context managers
 
 ```python
-from stream_pymqi import Consumer, StreamConfig
-
-def on_error(exception):
-    print(f"Error: {exception}")
+from stream_pymqi import WorkerPool, StreamConfig
 
 config = StreamConfig(
     host='localhost',
     port=1414,
     channel='CHANNEL1',
     queue_manager='QM1',
-    queue_name='QUEUE1',
-    on_error=on_error
+    queue_name='QUEUE1'
 )
 
-consumer = Consumer(config)
-consumer.start()
+with WorkerPool(config=config) as pool:
+    @pool.worker(queue_name='QUEUE1')
+    def handle_queue1(message):
+        print(f"[QUEUE1] Received: {message}")
+
+    @pool.worker(queue_name='QUEUE2')
+    def handle_queue2(message):
+        print(f"[QUEUE2] Received: {message}")
+
+    # Workers run automatically in context manager
+    pass  # Workers will be stopped automatically
 ```
+
+## Examples
+
+See the `examples/` directory for more examples:
+- `simple_broker.py` - Simple broker with one queue
+- `multi_queue_broker.py` - Broker with multiple queues using WorkerPool
 
 ## API Reference
 
@@ -134,44 +233,56 @@ consumer.start()
 Configuration class for IBM MQ connection.
 
 **Parameters:**
-- `host`: IBM MQ host address
-- `port`: IBM MQ port (default: 1414)
-- `channel`: IBM MQ channel name
-- `queue_manager`: IBM MQ queue manager name
-- `queue_name`: IBM MQ queue name
-- `user`: IBM MQ user (optional)
-- `password`: IBM MQ password (optional)
-- `connect_retries`: Number of connection retries (default: 3)
-- `connect_retry_interval`: Interval between retries in seconds (default: 5)
-- `message_wait_interval`: Wait interval for message consumption in seconds (default: 5)
-- `auto_reconnect`: Enable automatic reconnection (default: True)
-- `max_message_size`: Maximum message size in bytes (default: 1048576)
-- `ssl`: Enable SSL connection (default: False)
-- `ssl_cipher_spec`: SSL cipher specification (optional)
-- `cert_store_location`: Certificate store location (optional)
+- `host` (str): Hostname of the IBM MQ server
+- `port` (int): Port of the IBM MQ server
+- `channel` (str): Channel name
+- `queue_manager` (str): Queue manager name
+- `queue_name` (str): Default queue name
+- `ssl` (bool): Enable SSL
+- `ssl_cipher_spec` (str): SSL cipher specification
+- `user` (str): User name for authentication
+- `password` (str): Password for authentication
+- `reconnect_interval` (int): Reconnect interval in seconds
 
-### Consumer
+### WorkerPool
 
-IBM MQ consumer with automatic connection management.
+Pool of workers to process messages from multiple queues.
 
 **Methods:**
-- `on_message()`: Decorator to register a message handler
-- `register_handler(handler)`: Register a message handler
-- `start()`: Start consuming messages in a background thread
-- `stop()`: Stop consuming messages
-- `is_running()`: Check if consumer is running
+- `worker(queue_name: str)` - Decorator to register a worker for a specific queue
+- `add_worker(queue_name: str, handler: Callable)` - Add a worker with handler directly
+- `start()` - Start all workers in separate threads
+- `stop()` - Stop all workers
+- `run()` - Start all workers and block until stopped
+
+### Worker
+
+Single queue worker for message processing.
+
+**Methods:**
+- `on_message()` - Decorator to register message handler
+- `run()` - Start the worker and process messages
+- `stop()` - Stop the worker
 
 ### Producer
 
-IBM MQ producer with automatic connection management.
+Message producer for sending messages to queues.
 
 **Methods:**
-- `connect()`: Establish connection to IBM MQ
-- `disconnect()`: Disconnect from IBM MQ
-- `send(message)`: Send a message to the queue
-- `send_string(text)`: Send a string message
-- `send_bytes(data)`: Send a bytes message
-- `is_connected()`: Check if connected to IBM MQ
+- `connect()` - Connect to IBM MQ
+- `disconnect()` - Disconnect from IBM MQ
+- `send(message: Message)` - Send a Message object
+- `send_string(data: str)` - Send a string directly
+- `send_json(data: Any)` - Send JSON data
+
+### Consumer
+
+Message consumer for receiving messages from queues.
+
+**Methods:**
+- `on_message()` - Decorator to register message handler
+- `start()` - Start consuming messages
+- `stop()` - Stop consuming messages
 
 ## License
 
