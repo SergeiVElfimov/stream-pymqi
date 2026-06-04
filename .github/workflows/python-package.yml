@@ -32,6 +32,9 @@ jobs:
         sudo tar -xzf mqclient.tar.gz -C /opt/mqm --strip-components=1
         sudo chmod 777 -R /opt/mqm
         sudo ldconfig
+    - name: Install pymqi wheel
+      run: |
+        pip install --no-build-isolation pymqi==1.12.11
     - name: Install dependencies
       run: poetry install
       env:
