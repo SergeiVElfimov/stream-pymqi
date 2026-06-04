@@ -30,10 +30,19 @@ Example usage:
 
 from stream_pymqi.broker import IbmMqBroker
 from stream_pymqi.config import StreamConfig
+from stream_pymqi.connection import Connection
+from stream_pymqi.consumer import Consumer
 from stream_pymqi.message import Message
+from stream_pymqi.producer import Producer
+from stream_pymqi.worker import Worker, WorkerPool
 
 __all__ = [
     "StreamConfig",
     "Message",
     "IbmMqBroker",
+    "Connection",
+    "Consumer",
+    "Producer",
+    "Worker",
+    "WorkerPool",
 ]
