@@ -1,0 +1,3 @@
+[bandit]
+exclude = ./tests,./.venv,./build,./dist
+skips = ['B110', 'B101']

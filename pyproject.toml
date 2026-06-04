@@ -1,0 +1,121 @@
+[tool.mypy]
+mypy_path = [
+  "stream_pymqi",
+]
+exclude = [
+    "tests",
+]
+show_error_codes = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+  "pymqi.*",
+]
+ignore_missing_imports = true
+
+[tool.poetry]
+name = "stream-pymqi"
+version = "0.1.0"
+description = "High-level IBM MQ consumer and producer library for Python"
+authors = ["Sergey V. Elfimov <elfimovserg@gmail.com>"]
+packages = [{include = "stream_pymqi"}]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/SergeiVElfimov/stream-pymqi"
+classifiers = [
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+[tool.poetry.dependencies]
+pymqi = ">=1.12.13"
+pyyaml = ">=6.0"
+python = ">=3.11,<4.0"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.7.9"
+flynt = "^1.0.1"
+greenlet = "^3.0.3"
+mypy = "^1.10.1"
+mypy-extensions = "^1.0.0"
+pre-commit = "^3.7.1"
+pytest = "^8.2.2"
+pytest-cov = "^5.0.0"
+requests = "^2.32.3"
+tomli = "^2.0.1"
+types-pyyaml = "^6.0.0"
+types-pytz = "^2025.2.0.20250516"
+types-setuptools = "^70.1.0.20240627"
+typing-extensions = "^4.12.2"
+ruff = "^0.5.0"
+urllib3 = "<=2.2.2"
+python-dotenv = ">=1.0.0"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".nox",
+    ".ruff_cache",
+]
+
+
+[tool.ruff.lint]
+select = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "I",
+  "SIM",
+  "UP",
+]
+ignore = [
+  "A003",  # Argument name should be lowercase.
+  "B008",  # Do not perform function calls in argument defaults.
+  "D1",  # Missing docstring https://www.pydocstyle.org/en/2.1.1/error_codes.html.
+  "D203",  # 1 blank line required before class docstring.
+  "D213",  # Multi-line docstring summary should start at the second line.
+]
+
+fixable = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "I",
+  "SIM",
+  "UP",
+]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.isort]
+known-first-party = [
+  "stream_pymqi",
+]
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
